@@ -15,13 +15,14 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
 
     private LocationManager locationManager=null;
     private LocationListener locationListener=null;
-    private EditText editLocation = null;
+    private TextView editLocation = null;
     private static final String TAG = "Debug";
 
     @Override
@@ -29,7 +30,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-//        editLocation = (EditText) findViewById(R.id.editTextLocation);
+        editLocation = (TextView) findViewById(R.id.temp);
 
         locationManager = (LocationManager)
                 getSystemService(Context.LOCATION_SERVICE);
@@ -39,32 +40,12 @@ public class MainActivity extends AppCompatActivity {
                 != PackageManager.PERMISSION_GRANTED) {
 
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
+            locationListener = new MyLocationListener();
         } else {
             // Permission has already been granted
-        }
-    }
-
-    public void onClick(View v) {
-        if (displayGpsStatus()) {
-
-            Log.v(TAG, "onClick");
-
-            editLocation.setText("Please!! move your device to"+
-                    " see the changes in coordinates."+"\nWait..");
-
             locationListener = new MyLocationListener();
-
         }
-    }
-
-    /*----Method to Check GPS is enable or disable ----- */
-    private Boolean displayGpsStatus() {
-        ContentResolver contentResolver = getBaseContext()
-                .getContentResolver();
-        boolean gpsStatus = Settings.Secure
-                .isLocationProviderEnabled(contentResolver,
-                        LocationManager.GPS_PROVIDER);
-        return gpsStatus;
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
     }
 
     /*----------Listener class to get coordinates ------------- */
