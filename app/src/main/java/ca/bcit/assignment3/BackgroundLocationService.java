@@ -33,8 +33,7 @@ public class BackgroundLocationService extends Service {
 
     private LocationManager locationManager = null;
     private LocationListener locationListener = null;
-    private String latitude = "";
-    private String longitude = "";
+
     private String deviceIpAddr = "";
     private String deviceName = "";
     private Socket serverSocket = null;
@@ -61,12 +60,6 @@ public class BackgroundLocationService extends Service {
         }
 
         locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
-
-        sendBroadcastMessage(locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER));
-        latitude = "" + locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER).getLatitude();
-        longitude = "" + locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER).getLongitude();
-
-        new sendInfo().execute(deviceIpAddr, deviceName, latitude, longitude);
     }
 
     private void sendBroadcastMessage(Location location) {
@@ -83,21 +76,24 @@ public class BackgroundLocationService extends Service {
         @Override
         public void onLocationChanged(Location loc) {
 
+            String latitude = "";
+            String longitude = "";
+
             Toast.makeText(getBaseContext(), "Location changed : Lat: " +
                             loc.getLatitude() + " Lng: " + loc.getLongitude(),
                     Toast.LENGTH_SHORT).show();
-
-            //debug to be removed
-            String longitude = "Longitude: " + loc.getLongitude();
-            Log.v(Constants.TAG, longitude);
-            String latitude = "Latitude: " + loc.getLatitude();
-            Log.v(Constants.TAG, latitude);
 
             sendBroadcastMessage(loc);
             latitude = "" + loc.getLatitude();
             longitude = "" + loc.getLongitude();
 
-            new sendInfo().execute(deviceIpAddr, deviceName, latitude, longitude);
+            //debug to be removed
+            Log.v(Constants.TAG, "Latitude: " + latitude);
+            Log.v(Constants.TAG, "Longitude: " + longitude);
+
+            if (serverSocket != null) {
+                new sendInfo().execute(deviceIpAddr, deviceName, latitude, longitude);
+            }
 
         }
 
@@ -198,9 +194,10 @@ public class BackgroundLocationService extends Service {
 
     private void openSocket() {
         try {
-            serverSocket = IO.socket("URL HERE");
+            serverSocket = IO.socket(Constants.SERVER_CONNECT_ADDRESS);
         } catch (URISyntaxException e) {
             //handle exception
+            return;
         }
 
         serverSocket.on(Socket.EVENT_CONNECT, onConnect);
