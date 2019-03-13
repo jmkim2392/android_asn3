@@ -38,11 +38,11 @@ public class MainActivity extends AppCompatActivity {
                 new BroadcastReceiver() {
                     @Override
                     public void onReceive(Context context, Intent intent) {
-                        double latitude = intent.getDoubleExtra(BackgroundLocationService.EXTRA_LATITUDE, 0);
-                        double longitude = intent.getDoubleExtra(BackgroundLocationService.EXTRA_LONGITUDE, 0);
+                        double latitude = intent.getDoubleExtra(Constants.EXTRA_LATITUDE, 0);
+                        double longitude = intent.getDoubleExtra(Constants.EXTRA_LONGITUDE, 0);
                         editLocation.setText("Lat: " + latitude + ", Lng: " + longitude);
                     }
-                }, new IntentFilter(BackgroundLocationService.ACTION_LOCATION_BROADCAST)
+                }, new IntentFilter(Constants.ACTION_LOCATION_BROADCAST)
         );
 
         if (ContextCompat.checkSelfPermission(this,
