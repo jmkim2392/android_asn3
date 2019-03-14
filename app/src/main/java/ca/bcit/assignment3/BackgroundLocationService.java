@@ -4,7 +4,6 @@ import android.Manifest;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -12,7 +11,6 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
@@ -37,7 +35,7 @@ public class BackgroundLocationService extends Service {
 
     private String deviceIpAddr = "";
     private String deviceName = "";
-    private Socket serverSocket = null;
+    private static Socket serverSocket = null;
 
     @Override
     public void onCreate() {
@@ -52,17 +50,8 @@ public class BackgroundLocationService extends Service {
 
         locationListener = new MyLocationListener();
 
-        if (ContextCompat.checkSelfPermission(this,
-                Manifest.permission.ACCESS_COARSE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED) {
-            // do nothing
-        }
-
-        if (ContextCompat.checkSelfPermission(this,
-                Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED) {
-            // do nothing
-        }
+        // Need to checkSelfPermission in order to request location updates
+        ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION);
 
         locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
     }
@@ -125,7 +114,7 @@ public class BackgroundLocationService extends Service {
         throw new UnsupportedOperationException("Not yet implemented");
     }
 
-    private class sendInfo extends AsyncTask<String, String, String> {
+    private static class sendInfo extends AsyncTask<String, String, String> {
 
         protected String doInBackground(String... params) {
 

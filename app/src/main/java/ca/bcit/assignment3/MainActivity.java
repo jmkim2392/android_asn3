@@ -1,27 +1,18 @@
 package ca.bcit.assignment3;
 
 import android.Manifest;
-import android.app.Activity;
 import android.content.BroadcastReceiver;
-import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
-import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
-import android.provider.Settings;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
-import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -72,17 +63,5 @@ public class MainActivity extends AppCompatActivity {
 
     public void stopClicked(View view) {
         stopService(backgroundLocationService);
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-//        startService(new Intent(this, BackgroundLocationService.class));
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-//        stopService(new Intent(this, BackgroundLocationService.class));
     }
 }
