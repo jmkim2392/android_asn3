@@ -27,6 +27,8 @@ public class MainActivity extends AppCompatActivity {
 
     private TextView editLocation = null;
 
+    Intent backgroundLocationService;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -51,20 +53,36 @@ public class MainActivity extends AppCompatActivity {
 
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
 
-        } else {
-            // Permission has already been granted
         }
+
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+
+        }
+
+        backgroundLocationService = new Intent(this, BackgroundLocationService.class);
+    }
+
+    public void startClicked(View view) {
+        startService(backgroundLocationService);
+    }
+
+    public void stopClicked(View view) {
+        stopService(backgroundLocationService);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        startService(new Intent(this, BackgroundLocationService.class));
+//        startService(new Intent(this, BackgroundLocationService.class));
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        stopService(new Intent(this, BackgroundLocationService.class));
+//        stopService(new Intent(this, BackgroundLocationService.class));
     }
 }

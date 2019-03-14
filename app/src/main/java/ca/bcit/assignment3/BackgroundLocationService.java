@@ -12,6 +12,7 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
@@ -54,9 +55,13 @@ public class BackgroundLocationService extends Service {
         if (ContextCompat.checkSelfPermission(this,
                 Manifest.permission.ACCESS_COARSE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
+            // do nothing
+        }
 
-        } else {
-            // Permission has already been granted
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+            // do nothing
         }
 
         locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
@@ -206,5 +211,14 @@ public class BackgroundLocationService extends Service {
         serverSocket.on(Socket.EVENT_CONNECT_TIMEOUT, onConnectError);
 
         serverSocket.connect();
+    }
+
+    @Override
+    public void onDestroy() {
+        // stop sending changed location
+        locationManager.removeUpdates(locationListener);
+        locationManager = null;
+
+        Log.i(Constants.TAG, "service stopped...");
     }
 }
