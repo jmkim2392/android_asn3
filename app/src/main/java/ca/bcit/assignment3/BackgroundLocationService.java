@@ -4,7 +4,6 @@ import android.Manifest;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -36,7 +35,7 @@ public class BackgroundLocationService extends Service {
 
     private String deviceIpAddr = "";
     private String deviceName = "";
-    private Socket serverSocket = null;
+    private static Socket serverSocket = null;
 
     @Override
     public void onCreate() {
@@ -51,13 +50,8 @@ public class BackgroundLocationService extends Service {
 
         locationListener = new MyLocationListener();
 
-        if (ContextCompat.checkSelfPermission(this,
-                Manifest.permission.ACCESS_COARSE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED) {
-
-        } else {
-            // Permission has already been granted
-        }
+        // Need to checkSelfPermission in order to request location updates
+        ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION);
 
         locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
     }
@@ -120,7 +114,7 @@ public class BackgroundLocationService extends Service {
         throw new UnsupportedOperationException("Not yet implemented");
     }
 
-    private class sendInfo extends AsyncTask<String, String, String> {
+    private static class sendInfo extends AsyncTask<String, String, String> {
 
         protected String doInBackground(String... params) {
 
@@ -206,5 +200,14 @@ public class BackgroundLocationService extends Service {
         serverSocket.on(Socket.EVENT_CONNECT_TIMEOUT, onConnectError);
 
         serverSocket.connect();
+    }
+
+    @Override
+    public void onDestroy() {
+        // stop sending changed location
+        locationManager.removeUpdates(locationListener);
+        locationManager = null;
+
+        Log.i(Constants.TAG, "service stopped...");
     }
 }
