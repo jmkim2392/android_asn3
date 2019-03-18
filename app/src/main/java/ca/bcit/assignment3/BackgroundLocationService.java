@@ -28,6 +28,8 @@ import io.socket.client.IO;
 import io.socket.client.Socket;
 import io.socket.emitter.Emitter;
 
+import static java.lang.Double.parseDouble;
+
 public class BackgroundLocationService extends Service {
 
     private LocationManager locationManager = null;
@@ -122,15 +124,15 @@ public class BackgroundLocationService extends Service {
             JSONObject message = new JSONObject();
             String ipAddr = params[0];
             String name = params[1];
-            String lat = params[2];
-            String lng = params[3];
+            Double lat = parseDouble(params[2]);
+            Double lng = parseDouble(params[3]);
 
             try {
                 message.put("ip", ipAddr);
                 message.put("name", name);
                 message.put("lat", lat);
                 message.put("lng", lng);
-                serverSocket.emit("send coordinates", message);
+                serverSocket.emit("send coordinates", message.toString());
                 result = "Successful";
             } catch (Exception e) {
                 result = "Failed";
