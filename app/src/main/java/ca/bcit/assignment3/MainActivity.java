@@ -1,3 +1,23 @@
+/*-------------------------------------------------------------------------------------
+--	SOURCE FILE: MainActivity.java - Main GUI interface for android mobile app
+--
+--	PROGRAM:		FIND_MY_PHONE
+--
+--	FUNCTIONS:
+--					protected void onCreate(Bundle savedInstanceState)
+--					public void startClicked(View view)
+--					public void stopClicked(View view)
+--
+--	DATE:			March 20, 2019
+--
+--	REVISIONS:		March 20, 2019
+--
+--	DESIGNER:		Jason Kim, Dasha Strigoun
+--
+--	PROGRAMMER:		Jason Kim, Dasha Strigoun
+--
+--	NOTES:  Main GUI on android
+--------------------------------------------------------------------------------------*/
 package ca.bcit.assignment3;
 
 import android.Manifest;

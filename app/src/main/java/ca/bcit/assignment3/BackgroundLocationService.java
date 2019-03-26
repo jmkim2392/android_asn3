@@ -1,3 +1,32 @@
+/*-------------------------------------------------------------------------------------
+--	SOURCE FILE: BackgroundLocationService.java - Location ping service for the program
+--
+--	PROGRAM:		FIND_MY_PHONE
+--
+--	FUNCTIONS:
+--					public void onCreate()
+--					private void sendBroadcastMessage(Location location)
+--					public void onLocationChanged(Location loc)
+--                  public void onProviderDisabled(String provider)
+--                  public void onProviderEnabled(String provider)
+--                  public void onStatusChanged(String provider, int status, Bundle extras)
+--                  public IBinder onBind(Intent intent)
+--                  protected String doInBackground(String... params)
+--                  protected void onPostExecute(String result)
+--                  private void getDeviceInfo()
+--                  private void openSocket()
+--                  public void onDestroy()
+--
+--	DATE:			March 20, 2019
+--
+--	REVISIONS:		March 20, 2019
+--
+--	DESIGNER:		Jason Kim
+--
+--	PROGRAMMER:		Jason Kim
+--
+--	NOTES:  Main GUI on android
+--------------------------------------------------------------------------------------*/
 package ca.bcit.assignment3;
 
 import android.Manifest;
@@ -30,6 +59,22 @@ import io.socket.emitter.Emitter;
 
 import static java.lang.Double.parseDouble;
 
+/*-------------------------------------------------------------------------------------
+--	CLASS:	        BackgroundLocationService
+--
+--	DATE:			March 20, 2019
+--
+--	REVISIONS:		March 20, 2019
+--
+--	DESIGNER:		Jason Kim
+--
+--	PROGRAMMER:		Jason Kim
+--
+--	INTERFACE:		public class BackgroundLocationService extends Service
+--
+--	NOTES:
+--	The main class for the location pinging service
+--------------------------------------------------------------------------------------*/
 public class BackgroundLocationService extends Service {
 
     private LocationManager locationManager = null;
@@ -39,6 +84,22 @@ public class BackgroundLocationService extends Service {
     private String deviceName = "";
     private static Socket serverSocket = null;
 
+    /*-------------------------------------------------------------------------------------
+    --	FUNCTION:	    onCreate
+    --
+    --	DATE:			March 20, 2019
+    --
+    --	REVISIONS:		March 20, 2019
+    --
+    --	DESIGNER:		Jason Kim
+    --
+    --	PROGRAMMER:		Jason Kim
+    --
+    --	INTERFACE:		public void onCreate()
+    --
+    --	NOTES:
+    --	The entry point to start the location pinging service
+    --------------------------------------------------------------------------------------*/
     @Override
     public void onCreate() {
         super.onCreate();
@@ -58,6 +119,22 @@ public class BackgroundLocationService extends Service {
         locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
     }
 
+    /*-------------------------------------------------------------------------------------
+    --	FUNCTION:	    sendBroadcastMessage
+    --
+    --	DATE:			March 20, 2019
+    --
+    --	REVISIONS:		March 20, 2019
+    --
+    --	DESIGNER:		Jason Kim
+    --
+    --	PROGRAMMER:		Jason Kim
+    --
+    --	INTERFACE:		private void sendBroadcastMessage(Location location)
+    --
+    --	NOTES:
+    --	Call this function to send location message to server
+    --------------------------------------------------------------------------------------*/
     private void sendBroadcastMessage(Location location) {
         if (location != null) {
             Intent intent = new Intent(Constants.ACTION_LOCATION_BROADCAST);
@@ -67,8 +144,40 @@ public class BackgroundLocationService extends Service {
         }
     }
 
-    /*----------Listener class to get coordinates ------------- */
+    /*-------------------------------------------------------------------------------------
+    --	CLASS:	        MyLocationListener
+    --
+    --	DATE:			March 20, 2019
+    --
+    --	REVISIONS:		March 20, 2019
+    --
+    --	DESIGNER:		Jason Kim
+    --
+    --	PROGRAMMER:		Jason Kim
+    --
+    --	INTERFACE:		private class MyLocationListener implements LocationListener
+    --
+    --	NOTES:
+    --	The listener class to get coordinates
+    --------------------------------------------------------------------------------------*/
     private class MyLocationListener implements LocationListener {
+
+        /*-------------------------------------------------------------------------------------
+        --	FUNCTION:	    onLocationChanged
+        --
+        --	DATE:			March 20, 2019
+        --
+        --	REVISIONS:		March 20, 2019
+        --
+        --	DESIGNER:		Jason Kim
+        --
+        --	PROGRAMMER:		Jason Kim
+        --
+        --	INTERFACE:		public void onLocationChanged(Location loc)
+        --
+        --	NOTES:
+        --	Function to be run when location of device changed
+        --------------------------------------------------------------------------------------*/
         @Override
         public void onLocationChanged(Location loc) {
 
@@ -90,34 +199,129 @@ public class BackgroundLocationService extends Service {
             if (serverSocket != null) {
                 new sendInfo().execute(deviceIpAddr, deviceName, latitude, longitude);
             }
-
         }
 
+        /*-------------------------------------------------------------------------------------
+        --	FUNCTION:	    onProviderDisabled
+        --
+        --	DATE:			March 20, 2019
+        --
+        --	REVISIONS:		March 20, 2019
+        --
+        --	DESIGNER:		Jason Kim
+        --
+        --	PROGRAMMER:		Jason Kim
+        --
+        --	INTERFACE:		public void onProviderDisabled(String provider)
+        --
+        --	NOTES:
+        --	UNUSED
+        --------------------------------------------------------------------------------------*/
         @Override
         public void onProviderDisabled(String provider) {
             // TODO Auto-generated method stub
         }
 
+        /*-------------------------------------------------------------------------------------
+        --	FUNCTION:	    onProviderEnabled
+        --
+        --	DATE:			March 20, 2019
+        --
+        --	REVISIONS:		March 20, 2019
+        --
+        --	DESIGNER:		Jason Kim
+        --
+        --	PROGRAMMER:		Jason Kim
+        --
+        --	INTERFACE:		public void onProviderEnabled(String provider)
+        --
+        --	NOTES:
+        --	UNUSED
+        --------------------------------------------------------------------------------------*/
         @Override
         public void onProviderEnabled(String provider) {
             // TODO Auto-generated method stub
         }
 
+        /*-------------------------------------------------------------------------------------
+        --	FUNCTION:	    onStatusChanged
+        --
+        --	DATE:			March 20, 2019
+        --
+        --	REVISIONS:		March 20, 2019
+        --
+        --	DESIGNER:		Jason Kim
+        --
+        --	PROGRAMMER:		Jason Kim
+        --
+        --	INTERFACE:		public void onStatusChanged(String provider, int status, Bundle extras)
+        --
+        --	NOTES:
+        --	UNUSED
+        --------------------------------------------------------------------------------------*/
         @Override
-        public void onStatusChanged(String provider,
-                                    int status, Bundle extras) {
+        public void onStatusChanged(String provider, int status, Bundle extras) {
             // TODO Auto-generated method stub
         }
     }
 
+    /*-------------------------------------------------------------------------------------
+    --	FUNCTION:	    onBind
+    --
+    --	DATE:			March 20, 2019
+    --
+    --	REVISIONS:		March 20, 2019
+    --
+    --	DESIGNER:		Jason Kim
+    --
+    --	PROGRAMMER:		Jason Kim
+    --
+    --	INTERFACE:		public IBinder onBind(Intent intent)
+    --
+    --	NOTES:
+    --	UNUSED
+    --------------------------------------------------------------------------------------*/
     @Override
     public IBinder onBind(Intent intent) {
         // TODO: Return the communication channel to the service.
         throw new UnsupportedOperationException("Not yet implemented");
     }
 
+
+    /*-------------------------------------------------------------------------------------
+    --	CLASS:	        sendInfo
+    --
+    --	DATE:			March 20, 2019
+    --
+    --	REVISIONS:		March 20, 2019
+    --
+    --	DESIGNER:		Jason Kim
+    --
+    --	PROGRAMMER:		Jason Kim
+    --
+    --	INTERFACE:		private static class sendInfo extends AsyncTask<String, String, String>
+    --
+    --	NOTES:
+    --	The Async task to ping the server with current coordinates
+    --------------------------------------------------------------------------------------*/
     private static class sendInfo extends AsyncTask<String, String, String> {
 
+        /*-------------------------------------------------------------------------------------
+        --	FUNCTION:	    doInBackground
+        --
+        --	DATE:			March 20, 2019
+        --
+        --	REVISIONS:		March 20, 2019
+        --
+        --	DESIGNER:		Jason Kim
+        --
+        --	PROGRAMMER:		Jason Kim
+        --
+        --	INTERFACE:		protected String doInBackground(String... params)
+        --
+        --	NOTES:
+        --	The main process function for asyn task to send the location message
+        --------------------------------------------------------------------------------------*/
         protected String doInBackground(String... params) {
 
             String result;
@@ -141,10 +345,25 @@ public class BackgroundLocationService extends Service {
         }
 
         protected void onPostExecute(String result) {
-
         }
     }
 
+    /*-------------------------------------------------------------------------------------
+    --	CLASS:	        onConnect
+    --
+    --	DATE:			March 20, 2019
+    --
+    --	REVISIONS:		March 20, 2019
+    --
+    --	DESIGNER:		Jason Kim
+    --
+    --	PROGRAMMER:		Jason Kim
+    --
+    --	INTERFACE:		private Emitter.Listener onConnect
+    --
+    --	NOTES:
+    --	The socket.io listener for onConnect
+    --------------------------------------------------------------------------------------*/
     private Emitter.Listener onConnect = new Emitter.Listener() {
         @Override
         public void call(Object... args) {
@@ -153,6 +372,22 @@ public class BackgroundLocationService extends Service {
         }
     };
 
+    /*-------------------------------------------------------------------------------------
+    --	CLASS:	        onDisconnect
+    --
+    --	DATE:			March 20, 2019
+    --
+    --	REVISIONS:		March 20, 2019
+    --
+    --	DESIGNER:		Jason Kim
+    --
+    --	PROGRAMMER:		Jason Kim
+    --
+    --	INTERFACE:		private Emitter.Listener onDisconnect
+    --
+    --	NOTES:
+    --	The socket.io listener for onDisconnect
+    --------------------------------------------------------------------------------------*/
     private Emitter.Listener onDisconnect = new Emitter.Listener() {
         @Override
         public void call(Object... args) {
@@ -161,6 +396,22 @@ public class BackgroundLocationService extends Service {
         }
     };
 
+    /*-------------------------------------------------------------------------------------
+    --	CLASS:	        onConnectError
+    --
+    --	DATE:			March 20, 2019
+    --
+    --	REVISIONS:		March 20, 2019
+    --
+    --	DESIGNER:		Jason Kim
+    --
+    --	PROGRAMMER:		Jason Kim
+    --
+    --	INTERFACE:		private Emitter.Listener onConnectError
+    --
+    --	NOTES:
+    --	The socket.io listener for onConnectError
+    --------------------------------------------------------------------------------------*/
     private Emitter.Listener onConnectError = new Emitter.Listener() {
         @Override
         public void call(Object... args) {
@@ -169,6 +420,22 @@ public class BackgroundLocationService extends Service {
         }
     };
 
+    /*-------------------------------------------------------------------------------------
+    --	FUNCTION:	    getDeviceInfo
+    --
+    --	DATE:			March 20, 2019
+    --
+    --	REVISIONS:		March 20, 2019
+    --
+    --	DESIGNER:		Jason Kim
+    --
+    --	PROGRAMMER:		Jason Kim
+    --
+    --	INTERFACE:		private void getDeviceInfo()
+    --
+    --	NOTES:
+    --	Call this function to get the device information
+    --------------------------------------------------------------------------------------*/
     private void getDeviceInfo() {
 
         deviceName = Build.USER;
@@ -188,6 +455,22 @@ public class BackgroundLocationService extends Service {
         }
     }
 
+    /*-------------------------------------------------------------------------------------
+    --	FUNCTION:	    openSocket
+    --
+    --	DATE:			March 20, 2019
+    --
+    --	REVISIONS:		March 20, 2019
+    --
+    --	DESIGNER:		Jason Kim
+    --
+    --	PROGRAMMER:		Jason Kim
+    --
+    --	INTERFACE:		private void openSocket()
+    --
+    --	NOTES:
+    --	Call this function to open the socket to the server
+    --------------------------------------------------------------------------------------*/
     private void openSocket() {
         try {
             serverSocket = IO.socket(Constants.SERVER_CONNECT_ADDRESS);
@@ -204,6 +487,22 @@ public class BackgroundLocationService extends Service {
         serverSocket.connect();
     }
 
+    /*-------------------------------------------------------------------------------------
+    --	FUNCTION:	    onDestroy
+    --
+    --	DATE:			March 20, 2019
+    --
+    --	REVISIONS:		March 20, 2019
+    --
+    --	DESIGNER:		Jason Kim
+    --
+    --	PROGRAMMER:		Jason Kim
+    --
+    --	INTERFACE:		public void onDestroy()
+    --
+    --	NOTES:
+    --	To be called when app terminated
+    --------------------------------------------------------------------------------------*/
     @Override
     public void onDestroy() {
         // stop sending changed location
